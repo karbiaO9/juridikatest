@@ -556,7 +556,7 @@ files: [File uploads...]
     }
   ]
 }
-```
+``` 
 
 ### Admin Routes (`/api/admin`)
 
