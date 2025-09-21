@@ -4,7 +4,6 @@ on:
   push:
     branches: ["main"]
 
-
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -34,21 +33,30 @@ jobs:
           echo "After cleanup:"
           df -h
 
-      # 5️⃣ Builder et pousser les images Docker
       - name: Build and Push Docker Images
         run: |
+          COMMIT_HASH=${{ github.sha }}
           services=("frontend" "backend")
           for svc in "${services[@]}"; do
             echo "Building and pushing $svc..."
+
+            # Définir le chemin du Dockerfile et du context
             if [ "$svc" == "frontend" ]; then
-              docker build -f ./frontend/Dockerfile -t $DOCKER_HUB_REPO:$svc ./frontend
+              DOCKERFILE_PATH="./frontend/Dockerfile"
+              CONTEXT_PATH="./frontend"
             else
-              docker build -f ./backend/Dockerfile -t $DOCKER_HUB_REPO:$svc ./backend
+              DOCKERFILE_PATH="./backend/Dockerfile"
+              CONTEXT_PATH="./backend"
             fi
+
+            # Builder et tagger
+            docker build -f $DOCKERFILE_PATH -t $DOCKER_HUB_REPO:$svc -t $DOCKER_HUB_REPO:$svc-$COMMIT_HASH $CONTEXT_PATH
+
+            # Pousser les deux tags
             docker push $DOCKER_HUB_REPO:$svc
+            docker push $DOCKER_HUB_REPO:$svc-$COMMIT_HASH
           done
 
-      # 6️⃣ Nettoyage final
       - name: Final Cleanup
         run: |
           docker system prune -af || true
