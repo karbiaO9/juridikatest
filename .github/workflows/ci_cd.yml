@@ -1,0 +1,57 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: ["main"]
+
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKER_HUB_REPO: sbika/juridika
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Free Disk Space
+        run: |
+          echo "Initial space:"
+          df -h
+          docker image prune -af || true
+          docker builder prune -af || true
+          echo "After cleanup:"
+          df -h
+
+      # 5️⃣ Builder et pousser les images Docker
+      - name: Build and Push Docker Images
+        run: |
+          services=("frontend" "backend")
+          for svc in "${services[@]}"; do
+            echo "Building and pushing $svc..."
+            if [ "$svc" == "frontend" ]; then
+              docker build -f ./frontend/Dockerfile -t $DOCKER_HUB_REPO:$svc ./frontend
+            else
+              docker build -f ./backend/Dockerfile -t $DOCKER_HUB_REPO:$svc ./backend
+            fi
+            docker push $DOCKER_HUB_REPO:$svc
+          done
+
+      # 6️⃣ Nettoyage final
+      - name: Final Cleanup
+        run: |
+          docker system prune -af || true
+          docker volume prune -f || true
+          echo "Final space:"
+          df -h
