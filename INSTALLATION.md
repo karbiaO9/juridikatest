@@ -357,7 +357,7 @@ After successful installation:
 4. **Documentation**: Read the main README.md for detailed feature information
 
 ---
-
+ 
 **Congratulations! 🎉 You have successfully installed Juridika.**
 
 The application should now be running and ready for development. Happy coding!
