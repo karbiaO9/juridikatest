@@ -36,12 +36,18 @@ app.use('/api/rendezvous', rendezVousRoutes)
 app.use('/api/cases', caseRoutes)
 app.use('/api/uploads', uploadRoutes)
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => app.listen(process.env.PORT, () => {
-        console.log(`✅ Server running on port ${process.env.PORT} and connected to MongoDB`)
-    })
-    )
-    .catch(err => console.log(err))
-
-// Default route 
+// Default route
 app.get("/", (req, res) => res.send("Juridika API is running"));
+
+// Bind to PORT first so Render detects the app (required for free tier), then connect to DB
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+  console.log(`✅ Server listening on port ${PORT}`)
+  mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('✅ Connected to MongoDB'))
+    .catch(err => {
+      console.error('❌ MongoDB connection failed:', err.message)
+      // Server stays up so Render keeps the deploy alive; API will fail until DB is fixed
+    })
+})
