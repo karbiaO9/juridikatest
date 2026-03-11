@@ -1,0 +1,25 @@
+# Test projects (excluded from main repo)
+backend-api-tests/
+frontend-ui-tests/
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+frontend/build/
+dist/
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
