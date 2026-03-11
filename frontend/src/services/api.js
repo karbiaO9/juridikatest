@@ -1,8 +1,10 @@
 import axios from 'axios';
 
-// Create axios instance with base configuration
+// Backend URL: use env in production (e.g. Vercel), fallback to localhost for dev
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+
 const api = axios.create({
-  baseURL: 'http://localhost:4000', // Backend server URL
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

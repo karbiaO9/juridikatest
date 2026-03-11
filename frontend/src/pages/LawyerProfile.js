@@ -26,12 +26,9 @@ const LawyerProfile = () => {
                 setLoading(true);
                 setError(null); // Clear previous errors
                 
-                // Get the API base URL
-                const getApiUrl = () => {
-                    return 'http://localhost:4000';
-                };
+                const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
-                const response = await fetch(`${getApiUrl()}/api/auth/avocats/${id}`, {
+                const response = await fetch(`${apiBaseUrl}/api/auth/avocats/${id}`, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
